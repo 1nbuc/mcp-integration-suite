@@ -137,13 +137,13 @@ src/main/resources/scenarioflows/integrationflow/<iflow id>.iflw contains the if
 					logInfo("auto deploy is activated");
 					await saveAsNewVersion(id);
 					const taskId = await deployIflow(id);
-					if(taskId) {
+					if (taskId) {
 						const deployStatus = await waitAndGetDeployStatus(taskId);
 						result["deployStatus"] = deployStatus;
 					} else {
 						result["deployStatus"] = "unknown, please check manually. Deployment was scheduled"
 					}
-					
+
 				}
 
 				return {
@@ -215,24 +215,32 @@ These are the prefixes based on protocol. So if you get /some/endpoint from get-
 	);
 
 	server.registerTool(
-		"iflow-image",
+		"get-iflow-image",
 		"Get the iflow logic shown as a image/diagram",
 		{
 			iflowId: z.string().describe("IFlow ID/Name"),
 		},
 		async ({ iflowId }) => {
-			const iflowPath = await getIflowFolder(iflowId);
-			logInfo(iflowPath);
-			const pngString = await getiFlowToImage(iflowPath);
-			return {
-				content: [
-					{
-						type: "image",
-						data: pngString,
-						mimeType: "image/png",
-					},
-				],
-			};
+			try {
+				const iflowPath = await getIflowFolder(iflowId);
+				logInfo(iflowPath);
+				const pngString = await getiFlowToImage(iflowPath);
+				return {
+					content: [
+						{
+							type: "image",
+							data: pngString,
+							mimeType: "image/png",
+						},
+					],
+				};
+			} catch (error) {
+				return {
+					isError: true,
+					content: [formatError(error)],
+				};
+			}
+
 		}
 	);
 
