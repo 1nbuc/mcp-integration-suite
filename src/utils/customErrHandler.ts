@@ -3,6 +3,7 @@ import { contentReturnElement } from "./middleware";
 import { logError } from "..";
 
 export const formatError = (error: any): contentReturnElement => {
+	if (process.env.DEBUG) logError(error);
 	const errReturn = extractAxiosError(error);
 	logError(errReturn);
 	return errReturn;

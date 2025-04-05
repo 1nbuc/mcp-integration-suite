@@ -29,5 +29,5 @@ export const writeToLog = (d: any) => {
  * @param d - The object or message to be logged
  */
 export const writeToErrLog = (d: any) => {
-	log_file.write(util.format(d) + "\n");
+	err_log_file.write(util.format(d) + "\n");
 };
