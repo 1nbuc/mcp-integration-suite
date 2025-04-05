@@ -8,7 +8,7 @@
         "build:tsc": "tsc -p tsconfig.json",
         "build": "npm run build:generateclient && npm run build:tsc",
         "start": "node dist/server.js",
-        "dev": "npm run build:tsc && npm run dev:inspector",
+        "dev": "concurrently \"nodemon --watch src -e ts,js,json --exec 'npm run build:tsc'\" \"npm run dev:inspector\"",
         "dev:inspector": "npx @modelcontextprotocol/inspector node ./dist/index.js",
         "test": "npm run build && node dist/test.js",
         "watch:log": "tail -n 20 -F ~/Library/Logs/Claude/mcp-server-mcp-integration-suite.log"
@@ -35,6 +35,8 @@
         "@types/node": "^18.15.0",
         "@types/puppeteer": "^5.4.7",
         "@types/semver": "^7.7.0",
+        "concurrently": "^9.1.2",
+        "nodemon": "^3.1.9",
         "ts-node-dev": "^2.0.0",
         "typescript": "^5.0.0"
     }
