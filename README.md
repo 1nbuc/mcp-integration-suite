@@ -159,7 +159,8 @@ These are some little more complex tasks I ran with multiple models. It is possi
 | Send a HTTP POST message with body {"hello": "world"} to iflow if_simple_http and show the response                                                                                                                                                                                                                                                                                                |          ✅         |          ✅         |           ✅           |          ✅         |
 | Get all messages with errors from the last two days                                                                                                                                                                                                                                                                                                                                                |          ✅         |          ✅         |           ✅           |          ✅         |
 | How much messages were processed this year per iflow accross all packages                                                                                                                                                                                                                                                                                                                          |          ✅         |          ✅         |           ✅           |          ✅         |
-
+* Rate limited by Client
+  
 ## TODOs
 - CSRF implementation
 - B2B Management
