@@ -1,16 +1,17 @@
 import { z } from "zod";
 import { McpServerWithMiddleware } from "../../utils/middleware";
-import { projPath } from "../..";
+import { logError, projPath } from "../..";
 import fsAsync from 'fs/promises';
 import fs from 'fs';
 import path from "path";
 import { glob, globSync } from "glob";
+import { formatError } from "../../utils/customErrHandler";
 
 const getDocsMap = () => {
     const baseDocPath = path.join(projPath, "resources", "Docs", "ISuite");
     const allFiles = globSync(path.join(baseDocPath, "**", "*.md").replace(/\\/g, '/'), { nodir: true });
 
-    const resultObj: {[key: string]: string} = {};
+    const resultObj: { [key: string]: string } = {};
 
     for (const file of allFiles) {
         const displayFile = path.relative(baseDocPath, file);
@@ -20,7 +21,7 @@ const getDocsMap = () => {
     return resultObj;
 }
 
-const docsMap: {[key: string]: string} = getDocsMap();
+const docsMap: { [key: string]: string } = getDocsMap();
 
 export const registerDocsHandlers = (server: McpServerWithMiddleware) => {
     server.registerTool("get-docs",
@@ -47,21 +48,24 @@ If not provided it returns the index`).optional()
             }
         })
 
-        server.registerTool("search-docs", "Search for docs based on keywords", {
-            keywords: z.array(z.string()).describe("Search keywords"),
-            matchAll: z.boolean().describe("If true it must match all keywords, if false only one of the provided keywords")
-        }, async({ keywords, matchAll }) => {
-            const matches: {[key: string]: string} = {};
+    server.registerTool("search-docs", "Search for docs based on keywords", {
+        keywords: z.array(z.string()).describe("Search keywords"),
+        matchAll: z.boolean().describe("If true it must match all keywords, if false only one of the provided keywords")
+    }, async ({ keywords, matchAll }) => {
+        try {
+
+
+            const matches: { [key: string]: string } = {};
 
             Object.entries(docsMap).forEach(docPage => {
-                const [ key, value ] = docPage;
+                const [key, value] = docPage;
 
                 let hasUnmatchedKeyword = false;
-                
-                for(const keyword of keywords) {
-                    if(matchAll && hasUnmatchedKeyword) {
+
+                for (const keyword of keywords) {
+                    if (matchAll && hasUnmatchedKeyword) {
                         continue;
-                    } 
+                    }
 
                     if (value.includes(keyword)) {
                         matches[key] = value;
@@ -78,11 +82,25 @@ If not provided it returns the index`).optional()
                 hasUnmatchedKeyword = false;
             });
 
+            const result = JSON.stringify(matches);
+
+            if (result.length > 1000000) {
+                throw new Error(`Your search returned documents with a total length of ${result.length}.
+                    Please use diffrent search parameters. Total length must be < 1000000`)
+            }
+
             return {
                 content: [{
                     type: "text",
-                    text: JSON.stringify(matches)
+                    text: result
                 }]
             }
-        })
+        } catch (error) {
+            logError(error);
+            return {
+                isError: true,
+                content: [formatError(error)],
+            };
+        }
+    })
 }
