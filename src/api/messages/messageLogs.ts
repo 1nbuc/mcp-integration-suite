@@ -12,7 +12,7 @@ import {
 import { DeSerializers, or } from "@sap-cloud-sdk/odata-v2";
 import { and, Filter, FilterList } from "@sap-cloud-sdk/odata-common";
 import moment, { Moment } from "moment";
-import { getCurrentDestionation } from "../api_destination";
+import { getCurrentDestination } from "../api_destination";
 import { createIflow } from "../iflow";
 import { integrationContent } from "../../generated/IntegrationContent";
 import { folderToZipBuffer } from "../../utils/zip";
@@ -102,12 +102,12 @@ export const getMessages = async (
 		.top(50)
 		.filter(getFilters(filterProps));
 
-	logInfo(await messageBaseReq.url(await getCurrentDestionation()));
+	logInfo(await messageBaseReq.url(await getCurrentDestination()));
 
 	const messageWithErrVal: (MessageProcessingLogs & {
 		ErrorInformationValue?: string;
 		messageAttachementFiles?: { description?: string; data: string }[];
-	})[] = await messageBaseReq.execute(await getCurrentDestionation());
+	})[] = await messageBaseReq.execute(await getCurrentDestination());
 
 	logInfo(`Found ${messageWithErrVal.length} messages`);
 
@@ -120,7 +120,7 @@ export const getMessages = async (
 						.requestBuilder()
 						.getByKey(message.messageGuid)
 						.appendPath("/AdapterAttributes")
-						.executeRaw(await getCurrentDestionation())
+						.executeRaw(await getCurrentDestination())
 				).data;
 			} catch (error) {
 				logInfo(
@@ -134,7 +134,7 @@ export const getMessages = async (
 						.requestBuilder()
 						.getByKey(message.messageGuid)
 						.appendPath("/CustomHeaderProperties")
-						.executeRaw(await getCurrentDestionation())
+						.executeRaw(await getCurrentDestination())
 				).data.d.results;
 			} catch (error) {
 				logInfo(
@@ -149,7 +149,7 @@ export const getMessages = async (
 						.requestBuilder()
 						.getByKey(message.messageGuid)
 						.appendPath("/Attachments")
-						.executeRaw(await getCurrentDestionation())
+						.executeRaw(await getCurrentDestination())
 				).data.d.results;
 
 				logInfo(
@@ -176,7 +176,7 @@ export const getMessages = async (
 						.requestBuilder()
 						.getByKey(message.messageGuid)
 						.appendPath("/Attachments")
-						.url(await getCurrentDestionation())
+						.url(await getCurrentDestination())
 				);
 				logInfo(error);
 			}
@@ -191,14 +191,14 @@ export const getMessages = async (
 							.requestBuilder()
 							.getByKey(message.messageGuid)
 							.appendPath("/ErrorInformation")
-							.executeRaw(await getCurrentDestionation())
+							.executeRaw(await getCurrentDestination())
 					).data.d.results;
 					message.ErrorInformationValue = (
 						await messageProcessingLogsApi
 							.requestBuilder()
 							.getByKey(message.messageGuid)
 							.appendPath("/ErrorInformation/$value")
-							.executeRaw(await getCurrentDestionation())
+							.executeRaw(await getCurrentDestination())
 					).data;
 				} catch (error) {
 					logInfo(
@@ -224,7 +224,7 @@ export const getMessagesCount = async (
 		.getAll()
 		.filter(getFilters(filterProps))
 		.count()
-		.execute(await getCurrentDestionation());
+		.execute(await getCurrentDestination());
 };
 
 /**
@@ -240,7 +240,7 @@ export const getMessageMedia = async (mediaId: string): Promise<string> => {
 			.requestBuilder()
 			.getByKey(mediaId)
 			.appendPath("/$value")
-			.executeRaw(await getCurrentDestionation())
+			.executeRaw(await getCurrentDestination())
 	).data;
 };
 
@@ -249,8 +249,8 @@ export const createMappingTestIflow = async (pkgId: string) => {
 		await integrationDesigntimeArtifactsApi
 			.requestBuilder()
 			.delete("if_echo_mapping", "active")
-			.execute(await getCurrentDestionation());
-	} catch (error) {}
+			.execute(await getCurrentDestination());
+	} catch (error) { }
 
 	const iflowBuffer = await folderToZipBuffer(
 		path.resolve(projPath, "resources", "helpers", "if_echo_mapping")
@@ -268,5 +268,5 @@ export const createMappingTestIflow = async (pkgId: string) => {
 	await integrationDesigntimeArtifactsApi
 		.requestBuilder()
 		.create(newIflow)
-		.execute(await getCurrentDestionation());
+		.execute(await getCurrentDestination());
 };

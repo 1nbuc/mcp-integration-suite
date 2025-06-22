@@ -3,7 +3,7 @@ import { createPackage, getPackage, getPackages } from "../packages/index";
 // Correct the relative path from src/api/__tests__/ to src/generated/
 import { integrationContent, IntegrationPackages } from "../../generated/IntegrationContent/index";
 import dotenv from 'dotenv';
-import { getCurrentDestionation } from "../api_destination";
+import { getCurrentDestination } from "../api_destination";
 import { deletePackage } from "./helpers";
 
 // Load environment variables from .env file
@@ -82,7 +82,7 @@ describe("Package Management API", () => {
         }
     });
 
-    afterAll(async() => {
+    afterAll(async () => {
         await deletePackage(testPackageId);
     });
 });

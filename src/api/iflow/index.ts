@@ -1,6 +1,6 @@
 
 import { extractToFolder, folderToZipBuffer } from "../../utils/zip";
-import { getCurrentDestionation, getOAuthToken } from "../api_destination";
+import { getCurrentDestination, getOAuthToken } from "../api_destination";
 import { updateFiles } from "../../handlers/iflow/tools";
 
 import { z } from "zod";
@@ -34,7 +34,7 @@ export const getIflowFolder = async (id: string): Promise<string> => {
 		.getByKey(id, "active")
 		.appendPath("/$value")
 		.addCustomRequestConfiguration({ responseType: "arraybuffer" })
-		.executeRaw(await getCurrentDestionation());
+		.executeRaw(await getCurrentDestination());
 
 	const arrBuffer = await iflowBuffer.data;
 
@@ -62,7 +62,7 @@ export const createIflow = async (
 	await integrationDesigntimeArtifactsApi
 		.requestBuilder()
 		.create(newIflow)
-		.execute(await getCurrentDestionation());
+		.execute(await getCurrentDestination());
 };
 
 /**
@@ -103,7 +103,7 @@ export const updateIflow = async (
 		.requestBuilder()
 		.update(newIflowEntity)
 		.replaceWholeEntityWithPut()
-		.execute(await getCurrentDestionation());
+		.execute(await getCurrentDestination());
 
 	return {
 		iflowUpdate: {
@@ -121,7 +121,7 @@ export const saveAsNewVersion = async (id: string) => {
 	const currentIflow = await integrationDesigntimeArtifactsApi
 		.requestBuilder()
 		.getByKey(id, "active")
-		.execute(await getCurrentDestionation());
+		.execute(await getCurrentDestination());
 
 	const newVersion = semver.inc(currentIflow.version, "patch");
 
@@ -136,7 +136,7 @@ export const saveAsNewVersion = async (id: string) => {
 	await integrationDesigntimeArtifactSaveAsVersion({
 		id,
 		saveAsVersion: newVersion,
-	}).execute(await getCurrentDestionation());
+	}).execute(await getCurrentDestination());
 };
 
 /**
@@ -164,10 +164,10 @@ export const getEndpoints = async (id?: string) => {
 	}
 
 	logInfo(
-		`Requesting Endpoints on ${await endpointRequest.url(await getCurrentDestionation())}`
+		`Requesting Endpoints on ${await endpointRequest.url(await getCurrentDestination())}`
 	);
 	const endpoints = await endpointRequest.execute(
-		await getCurrentDestionation()
+		await getCurrentDestination()
 	);
 	const endpointsWithUrl: (ServiceEndpoints & { URL?: string })[] = endpoints;
 
@@ -188,7 +188,7 @@ export const deployIflow = async (id: string): Promise<string> => {
 	const deployRes = await deployIntegrationDesigntimeArtifact({
 		id,
 		version: "active",
-	}).executeRaw(await getCurrentDestionation());
+	}).executeRaw(await getCurrentDestination());
 
 	if (deployRes.status !== 202) {
 		throw new Error("Error starting deployment of " + id);
@@ -206,7 +206,7 @@ export const getIflowConfiguration = async (
 		.requestBuilder()
 		.getByKey(iflowId, "active")
 		.appendPath("/Configurations")
-		.executeRaw(await getCurrentDestionation());
+		.executeRaw(await getCurrentDestination());
 
 	if (configurationRes.status !== 200 || !configurationRes.data.d.results) {
 		throw new Error(
@@ -222,15 +222,15 @@ export const getAllIflowsByPackage = async (
 ): Promise<
 	{
 		[k in keyof typeof integrationDesigntimeArtifactsApi.schema]:
-			| string
-			| undefined;
+		| string
+		| undefined;
 	}[]
 > => {
 	const allIflowsRes = await integrationPackagesApi
 		.requestBuilder()
 		.getByKey(pkgId)
 		.appendPath("/IntegrationDesigntimeArtifacts")
-		.executeRaw(await getCurrentDestionation());
+		.executeRaw(await getCurrentDestination());
 	integrationDesigntimeArtifactsApi.schema;
 	if (allIflowsRes.status !== 200 || !allIflowsRes?.data?.d?.results) {
 		throw new Error(
