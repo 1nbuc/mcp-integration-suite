@@ -1,5 +1,5 @@
-import { generate } from '@sap-cloud-sdk/generator';
-import path from 'path';
+const { generate } = require('@sap-cloud-sdk/generator');
+const path = require('path');
 
 // Create your options, adapt the input & output directory as well as the package name according to your setup.
 // The edmx files in this directory are from api.sap.com but are sometimes adjusted because otherwise client generation will fail
