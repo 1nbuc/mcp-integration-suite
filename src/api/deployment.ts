@@ -2,7 +2,7 @@ import {
 	deployIntegrationDesigntimeArtifact,
 	integrationContent,
 } from "../generated/IntegrationContent";
-import { getCurrentDestionation } from "./api_destination";
+import { getCurrentDestination } from "./api_destination";
 
 const { buildAndDeployStatusApi, integrationRuntimeArtifactsApi } =
 	integrationContent();
@@ -22,13 +22,13 @@ export const waitAndGetDeployStatus = async (
 	let statusObj = await buildAndDeployStatusApi
 		.requestBuilder()
 		.getByKey(taskId)
-		.execute(await getCurrentDestionation());
+		.execute(await getCurrentDestination());
 
 	while (statusObj.status === "DEPLOYING") {
 		statusObj = await buildAndDeployStatusApi
 			.requestBuilder()
 			.getByKey(taskId)
-			.execute(await getCurrentDestionation());
+			.execute(await getCurrentDestination());
 		await sleep(1000);
 	}
 
@@ -51,5 +51,5 @@ export const getDeploymentErrorReason = async (
 		.requestBuilder()
 		.getByKey(id)
 		.appendPath("/ErrorInformation/$value")
-		.executeRaw(await getCurrentDestionation())).data;
+		.executeRaw(await getCurrentDestination())).data;
 };

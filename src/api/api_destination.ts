@@ -76,10 +76,10 @@ export const getOAuthToken = async (): Promise<DestinationAuthToken> => {
 
 const isOAuthPresent = () =>
 	process.env.API_OAUTH_CLIENT_ID &&
-	process.env.API_OAUTH_CLIENT_SECRET &&
-	process.env.API_OAUTH_TOKEN_URL
-	? true
-	: false;
+		process.env.API_OAUTH_CLIENT_SECRET &&
+		process.env.API_OAUTH_TOKEN_URL
+		? true
+		: false;
 
 const isBasicCredPresent = () => process.env.API_USER && process.env.API_PASS ? true : false;
 
@@ -87,7 +87,7 @@ const isBasicCredPresent = () => process.env.API_USER && process.env.API_PASS ? 
  * Get the API Destination based on .env file
  * @returns
  */
-export const getCurrentDestionation =
+export const getCurrentDestination =
 	async (): Promise<HttpDestinationOrFetchOptions> => {
 		if (!process.env.API_BASE_URL) {
 			throw new Error("No API Url provided in project .env file");
@@ -100,12 +100,12 @@ export const getCurrentDestionation =
 			);
 		}
 
-		if  (isOAuthPresent()) return getOAuthConfig();
+		if (isOAuthPresent()) return getOAuthConfig();
 
 		if (isBasicCredPresent()) return getBasicAuthConfig();
 
 		throw new Error("Error setting up Authentication. Please check .env");
-		
+
 	};
 
 const getOAuthConfig = async (): Promise<HttpDestinationOrFetchOptions> => {
@@ -117,7 +117,7 @@ const getOAuthConfig = async (): Promise<HttpDestinationOrFetchOptions> => {
 	};
 };
 
-const getBasicAuthConfig = async(): Promise<HttpDestinationOrFetchOptions> => {
+const getBasicAuthConfig = async (): Promise<HttpDestinationOrFetchOptions> => {
 	return {
 		authentication: "BasicAuthentication" as AuthenticationType,
 		username: process.env.API_USER,

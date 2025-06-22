@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import { getOAuthToken, getCurrentDestionation } from "../api_destination";
+import { getOAuthToken, getCurrentDestination } from "../api_destination";
 import path from "path";
 import { projPath } from "../..";
 
@@ -45,7 +45,7 @@ describe("API Destination Handling", () => {
             }
         });
 
-        it("should throw an error if OAuth env vars are missing and it's called directly (though getCurrentDestionation handles this)", async () => {
+        it("should throw an error if OAuth env vars are missing and it's called directly (though getCurrentDestination handles this)", async () => {
             // Only run this if OAuth vars are NOT set but Basic Auth vars MIGHT be set (or neither)
             if (process.env.API_OAUTH_CLIENT_ID || process.env.API_OAUTH_CLIENT_SECRET || process.env.API_OAUTH_TOKEN_URL) {
                 console.warn("Skipping direct getOAuthToken error test: OAuth variables seem to be present.");
@@ -57,13 +57,13 @@ describe("API Destination Handling", () => {
         });
     });
 
-    // --- Tests for getCurrentDestionation ---
-    describe("getCurrentDestionation", () => {
+    // --- Tests for getCurrentDestination ---
+    describe("getCurrentDestination", () => {
         it("should throw an error if API_BASE_URL is missing", async () => {
             const originalBaseUrl = process.env.API_BASE_URL;
             delete process.env.API_BASE_URL; // Temporarily remove the variable
 
-            await expect(getCurrentDestionation()).rejects.toThrow("No API Url provided in project .env file");
+            await expect(getCurrentDestination()).rejects.toThrow("No API Url provided in project .env file");
 
             process.env.API_BASE_URL = originalBaseUrl; // Restore the variable
         });
@@ -83,7 +83,7 @@ describe("API Destination Handling", () => {
             delete process.env.API_USER;
             delete process.env.API_PASS;
 
-            await expect(getCurrentDestionation()).rejects.toThrow("No Authentication method provided in project .env file");
+            await expect(getCurrentDestination()).rejects.toThrow("No Authentication method provided in project .env file");
 
             // Restore variables
             config({ path: path.join(projPath, '.env') });
@@ -94,12 +94,12 @@ describe("API Destination Handling", () => {
         it("should return OAuth destination if OAuth env vars are set", async () => {
             // Add specific check for API_OAUTH_TOKEN_URL as well, as getOAuthToken now requires it
             if (!process.env.API_BASE_URL || !process.env.API_OAUTH_CLIENT_ID || !process.env.API_OAUTH_CLIENT_SECRET || !process.env.API_OAUTH_TOKEN_URL) {
-                console.warn("Skipping getCurrentDestionation (OAuth) test: Required environment variables (API_BASE_URL, API_OAUTH_CLIENT_ID, API_OAUTH_CLIENT_SECRET, API_OAUTH_TOKEN_URL) are not set.");
+                console.warn("Skipping getCurrentDestination (OAuth) test: Required environment variables (API_BASE_URL, API_OAUTH_CLIENT_ID, API_OAUTH_CLIENT_SECRET, API_OAUTH_TOKEN_URL) are not set.");
                 return;
             }
 
             try {
-                const destination = await getCurrentDestionation();
+                const destination = await getCurrentDestination();
                 expect(destination).toBeDefined();
                 // Use string literal for AuthenticationType comparison
                 expect(destination.authentication).toEqual("OAuth2ClientCredentials");
@@ -114,7 +114,7 @@ describe("API Destination Handling", () => {
                 expect(destination.authTokens![0].expiresIn).toBeDefined();
                 expect(destination.authTokens![0].http_header).toBeDefined();
             } catch (error) {
-                console.error("Error during getCurrentDestionation (OAuth) test:", error);
+                console.error("Error during getCurrentDestination (OAuth) test:", error);
                 throw error;
             }
         });
@@ -122,12 +122,12 @@ describe("API Destination Handling", () => {
         it("should return Basic Auth destination if Basic Auth env vars are set (and OAuth is not)", async () => {
 
             if (!process.env.API_BASE_URL || !process.env.API_USER || !process.env.API_PASS) {
-                console.warn("Skipping getCurrentDestionation (Basic) test: Required environment variables (API_BASE_URL, API_USER, API_PASS) are not set.");
+                console.warn("Skipping getCurrentDestination (Basic) test: Required environment variables (API_BASE_URL, API_USER, API_PASS) are not set.");
                 return;
             }
 
             try {
-                const destination = await getCurrentDestionation();
+                const destination = await getCurrentDestination();
                 expect(destination).toBeDefined();
                 // Use string literal for AuthenticationType comparison
                 expect(destination.authentication).toEqual("BasicAuthentication");
@@ -135,7 +135,7 @@ describe("API Destination Handling", () => {
                 expect(destination.username).toEqual(process.env.API_USER);
                 expect(destination.password).toEqual(process.env.API_PASS);
             } catch (error) {
-                console.error("Error during getCurrentDestionation (Basic) test:", error);
+                console.error("Error during getCurrentDestination (Basic) test:", error);
                 throw error;
             }
         });

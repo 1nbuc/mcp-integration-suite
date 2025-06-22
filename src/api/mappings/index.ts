@@ -7,7 +7,7 @@ import {
 import { updateFiles } from "../../handlers/iflow/tools";
 import { parseFolder, patchFile } from "../../utils/fileBasedUtils";
 import { extractToFolder, folderToZipBuffer } from "../../utils/zip";
-import { getCurrentDestionation, getOAuthToken } from "../api_destination";
+import { getCurrentDestination, getOAuthToken } from "../api_destination";
 import { z } from "zod";
 import semver from "semver";
 import { executeHttpRequest } from "@sap-cloud-sdk/http-client";
@@ -27,7 +27,7 @@ export const getMessageMappingFolder = async (id: string): Promise<string> => {
 		.getByKey(id, "active")
 		.appendPath("/$value")
 		.addCustomRequestConfiguration({ responseType: "arraybuffer" })
-		.executeRaw(await getCurrentDestionation());
+		.executeRaw(await getCurrentDestination());
 
 	const buf = Buffer.from(arrBuffer.data);
 	return extractToFolder(buf, id);
@@ -56,9 +56,9 @@ export const updateMessageMapping = async (
 	const url = await messageMappingDesigntimeArtifactsApi
 		.requestBuilder()
 		.getByKey(id, "active")
-		.url(await getCurrentDestionation());
+		.url(await getCurrentDestination());
 
-	const res = await executeHttpRequest(await getCurrentDestionation(), {
+	const res = await executeHttpRequest(await getCurrentDestination(), {
 		url,
 		method: "PUT",
 		headers: { "Content-Type": "application/json" },
@@ -84,7 +84,7 @@ export const saveAsNewVersion = async (id: string) => {
 	const currentMessageMapping = await messageMappingDesigntimeArtifactsApi
 		.requestBuilder()
 		.getByKey(id, "active")
-		.execute(await getCurrentDestionation());
+		.execute(await getCurrentDestination());
 
 	const newVersion = semver.inc(currentMessageMapping.version, "patch");
 
@@ -99,7 +99,7 @@ export const saveAsNewVersion = async (id: string) => {
 	await messageMappingDesigntimeArtifactSaveAsVersion({
 		id,
 		saveAsVersion: newVersion,
-	}).execute(await getCurrentDestionation());
+	}).execute(await getCurrentDestination());
 };
 
 /**
@@ -111,7 +111,7 @@ export const deployMapping = async (id: string): Promise<string> => {
 	const deployRes = await deployMessageMappingDesigntimeArtifact({
 		id,
 		version: "active",
-	}).executeRaw(await getCurrentDestionation());
+	}).executeRaw(await getCurrentDestination());
 
 	if (deployRes.status !== 202) {
 		throw new Error("Error starting deployment of " + id);
@@ -141,11 +141,11 @@ export const createMessageMapping = async (
 	await messageMappingDesigntimeArtifactsApi
 		.requestBuilder()
 		.create(newMessageMapping)
-		.execute(await getCurrentDestionation());
+		.execute(await getCurrentDestination());
 };
 
 export const getAllMessageMappings = async () =>
 	messageMappingDesigntimeArtifactsApi
 		.requestBuilder()
 		.getAll()
-		.execute(await getCurrentDestionation());
+		.execute(await getCurrentDestination());

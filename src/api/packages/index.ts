@@ -1,6 +1,6 @@
 
 import { integrationContent } from "../../generated/IntegrationContent";
-import { getCurrentDestionation } from "../api_destination"; // Removed .js again
+import { getCurrentDestination } from "../api_destination"; // Removed .js again
 
 const { integrationPackagesApi } = integrationContent();
 
@@ -8,14 +8,14 @@ export const getPackages = async () => {
 	return integrationPackagesApi
 		.requestBuilder()
 		.getAll()
-		.execute(await getCurrentDestionation());
+		.execute(await getCurrentDestination());
 };
 
 export const getPackage = async (id: string) => {
 	return integrationPackagesApi
 		.requestBuilder()
 		.getByKey(id)
-		.execute(await getCurrentDestionation());
+		.execute(await getCurrentDestination());
 };
 
 export const createPackage = async (
@@ -32,5 +32,5 @@ export const createPackage = async (
 	return integrationPackagesApi
 		.requestBuilder()
 		.create(newPackage)
-		.execute(await getCurrentDestionation());
+		.execute(await getCurrentDestination());
 };
