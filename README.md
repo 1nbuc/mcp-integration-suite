@@ -2,6 +2,9 @@ DISCLAIMER: This server is still experimental. Use at your own risk!
 # MCP Integration Suite Server
 
 A ModelContextProtocol (MCP) Server for SAP Integration Suite.
+For more details/setup instructions please check out [this blog](https://community.sap.com/t5/technology-blog-posts-by-members/using-integration-suite-with-the-power-of-ai/ba-p/14067293): 
+
+There is another MCP-Server available for accessing TPM Content: https://github.com/1nbuc/mcp-is-tpm
 
 ## Requirements
 NodeJs and NPM (Node Version > 20 because of native NodeJS fetch)
@@ -157,12 +160,13 @@ This server works best in conjunction with the `mcp-integration-suite` server, w
 ## Important Guidelines
 
 1.  **ALWAYS examine existing data structures first.** Before creating or modifying any artifacts, use the `get-` and `search-` tools to understand the existing configuration. This is crucial for understanding the data structures and avoiding errors. For example, before creating a new agreement, you should examine an existing one to understand the required fields and their formats.
-2.  **Use a step-by-step approach**:
+2.  **All artifacts use GUIDs as IDs**, except for type system IDs. For most artifacts, there is both an ID and a version ID, but the version ID is usually sufficient to uniquely identify the artifact. Only exception is Typing Systems which have no GUID Identifier
+3.  **Use a step-by-step approach**:
     *   Analyze requirements.
     *   Check for existing examples of similar artifacts.
     *   Create/modify the necessary artifacts (e.g., Trading Partner, MIG, Agreement).
     *   Verify your changes.
-3.  **Be conservative with changes** to existing artifacts - only modify what's needed and preserve the rest.
+4.  **Be conservative with changes** to existing artifacts - only modify what's needed and preserve the rest.
 
 ## Available Tools
 
@@ -179,6 +183,7 @@ This server works best in conjunction with the `mcp-integration-suite` server, w
 *   `get-sender-adapters`: Get all sender adapters of trading partner systems.
 *   `get-receiver-adapters`: Get all receiver adapters of trading partner systems.
 *   `create-signature-verify-config`: Create Signature Verification configuration for a partner.
+*   `activate-signature-verify-config`: Activate Signature Verification configuration for a partner.
 *   `get-all-company-profile-metadata`: Get metadata for all company profiles.
 
 ### Agreement Management
@@ -188,29 +193,43 @@ This server works best in conjunction with the `mcp-integration-suite` server, w
 *   `create-agreement-with-bound-template`: Create a new B2B agreement which is bound to a template.
 *   `get-agreement-b2b-scenario`: Get the technical B2B scenario of an agreement.
 *   `update-b2b-scenario`: Update an Agreement's B2B Scenario.
+*   `trigger-agreement-activate-or-update-deployment`: Update or deploy an agreement.
 
 ### Message Implementation Guideline (MIG) Management
 *   `get-all-mig-latest-metadata`: Get the latest metadata for all Message Implementation Guidelines (MIGs).
 *   `get-mig-raw-by-id`: Get raw MIG content by its version ID.
 *   `get-mig-nodes-xpath`: Get the Nodes of a MIG for a specified XPath.
 *   `get-all-mig-fields`: Get a List of all fields of a MIG.
-*   `get-documentations-for-notes`: Return the documentation of an element.
-*   `get-complex-type`: Get complex type by GUID List.
-*   `get-simple-type`: Get simple types by GUID List.
-*   `get-mig-sample-data`: Get sample data if available for a MIG.
+*   `get-mig-documentation-entry`: Get the documentation text for a id of a documentation within a mig.
+*   `get-mig-proposal`: Get Proposal for a MIG.
+*   `apply-mig-proposal`: Select fields based on MIG proposal.
 *   `create-mig-draft-all-segments-selected`: Creates a draft MIG from a source version, with all segments and fields pre-selected.
-*   `save-mig-all-segments-and-fields`: Saves a MIG, ensuring all segments and fields are selected.
-*   `delete-draft-mig`: Delete a draft MIG.
+*   `create-mig`: Create Message implementation guideline based on a type.
+*   `change-mig-field-selection`: Change the selection of MIG fields.
+
+### Mapping Guideline (MAG) Management
+*   `get-all-mags-metadata`: Get an overview of available Mapping guidelines.
+*   `create-mapping-guidelines`: Create a new mapping guidelines.
+*   `test-mag-with-message`: Send a message against a mapping guideline and get the result.
 
 ### Monitoring
-*   `search-interchanges`: Search for interchanges based on filter criteria.
+*   `search-interchanges`: Search for interchanges/TPM message monitoring based on filter criteria.
 *   `get-interchange-payloads`: Get payload data list for a specific interchange.
 *   `download-interchange-payload`: Download a specific payload by its ID.
-*   `get-interchange-last-error`: Get last error details for a specific interchange.
+*   `get-interchange-last-error`: Get last error details for a specific message/business document.
 
 ### Other
 *   `get-type-systems`: Get available type systems.
+*   `get-type-system-messages`: Get messages of a type system.
+*   `get-type-system-message-full`: Get a message from a type system with all details including versions and revisions.
+*   `create-custom-message`: Create a custom message in typesystem Customer_TS based on XSD.
+*   `get-type-system-identifier-schemes`: Get the possible scheme for identifiers in a type system.
+*   `get-all-business-process-roles`: Get all business process roles.
+*   `get-all-business-processes`: Get all business processes.
+*   `get-all-industry-classifications`: Get all industry classifications.
+*   `get-all-product-classifications`: Get all product classifications.
 *   `get-all-products`: Get all available products/types for a system e.g. SAP SuccessFactors etc.
+*   `get-all-contries-or-regions`: Get all countries or regions.
 
 ## Getting Help
 
@@ -220,6 +239,7 @@ If you need assistance or are unsure how to proceed, you have a few options:
 2.  **Ask for Help:** If you can't find what you're looking for in the documentation, feel free to ask me directly. I can guide you on how to use the available tools to achieve your goals.
 
 When you need help with any TPM scenario, I'll guide you through these tools and help you create effective solutions following SAP best practices.
+
 
 ```
 
