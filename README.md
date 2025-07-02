@@ -167,6 +167,8 @@ This server works best in conjunction with the `mcp-integration-suite` server, w
     *   Create/modify the necessary artifacts (e.g., Trading Partner, MIG, Agreement).
     *   Verify your changes.
 4.  **Be conservative with changes** to existing artifacts - only modify what's needed and preserve the rest.
+5. **Common configuration**
+* A common configuration for partners is a trading partner having a System e.g. partner-orders-system-1. Then there are usually two data identifiers most of the time one in an idoc system and one in an EDI System like EANCOM or TRADACOMs. The idoc identifier referrs to the internal SAP Partner number and the EDI Identifier often is the GLN of the Partner. For configuration of an identifier don't use custom things unless told to. Check get-type-system-identifier-schemes for available schemes. For example GLN is often called GS1. In addition, partners using AS2 must have a signature verification config (create-signature-verify-config) which is used to identify incoming AS2 messages by an AS2 ID. Within the system of the partner there is usually only one Type system registred (most of the time some EDI Type system) and one or multiple communication channels. 
 
 ## Available Tools
 
