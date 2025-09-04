@@ -9,33 +9,33 @@ type MiddlewareFunction = (
 
 export type contentReturnElement =
 	| {
+		[x: string]: unknown;
+		type: "text";
+		text: string;
+	}
+	| {
+		[x: string]: unknown;
+		type: "image";
+		data: string;
+		mimeType: string;
+	}
+	| {
+		[x: string]: unknown;
+		type: "resource";
+		resource:
+		| {
 			[x: string]: unknown;
-			type: "text";
 			text: string;
-	  }
-	| {
+			uri: string;
+			mimeType?: string;
+		}
+		| {
 			[x: string]: unknown;
-			type: "image";
-			data: string;
-			mimeType: string;
-	  }
-	| {
-			[x: string]: unknown;
-			type: "resource";
-			resource:
-				| {
-						[x: string]: unknown;
-						text: string;
-						uri: string;
-						mimeType?: string;
-				  }
-				| {
-						[x: string]: unknown;
-						uri: string;
-						blob: string;
-						mimeType?: string;
-				  };
-	  };
+			uri: string;
+			blob: string;
+			mimeType?: string;
+		};
+	};
 
 export class MiddlewareManager {
 	private middlewares: MiddlewareFunction[] = [];
@@ -77,7 +77,7 @@ export class McpServerWithMiddleware extends McpServer {
 	/**
 	 * wrapper function for server.tool() to have middleware functionalities
 	 */
-	registerTool(
+	registerToolIntegrationSuite(
 		name: string,
 		description: string,
 		params: z.ZodRawShape,

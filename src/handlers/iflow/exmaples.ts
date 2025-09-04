@@ -7,14 +7,14 @@ import { availableExamples } from "../../api/iflow/examples";
 import { McpServerWithMiddleware } from "../../utils/middleware";
 
 export const registerIflowExampleHandler = (server: McpServerWithMiddleware) => {
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"list-iflow-examples",
 		`
 Get a list of available iflow examples.
 You can use these examples to query get-iflow-example
         `,
 		{},
-		async() => {
+		async () => {
 			return {
 				content: [
 					{
@@ -26,7 +26,7 @@ You can use these examples to query get-iflow-example
 		}
 	);
 
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"get-iflow-example",
 		`
 Get an existing iflow as an example to use to create or update other iflows

@@ -7,10 +7,10 @@ import { McpServerWithMiddleware } from "../../utils/middleware";
 const resourceDiscoverPath = path.resolve(projPath, "./resources/Discover");
 
 export const registerPackageDiscoverHandler = (server: McpServerWithMiddleware) => {
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"discover-packages",
 		"Get information about Packages from discover center",
-        {},
+		{},
 		async () => {
 			return {
 				content: [

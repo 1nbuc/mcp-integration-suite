@@ -5,7 +5,7 @@ import { formatError } from "../../utils/customErrHandler";
 import { sendRequestToCPI } from "../../api/messages/sendMessageToCPI";
 
 export const registerMessageHandlers = (server: McpServerWithMiddleware) => {
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"send-http-message",
 		`
 send an HTTP request to integration suite.
@@ -48,7 +48,7 @@ Currently only non CSRF-protected endpoints are supported for POST requests, whi
 		}
 	);
 
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"get-messages",
 		`
 Get message from the message monitoring
@@ -79,7 +79,7 @@ For bigger querys which don't need content of the messages consider using count-
 		}
 	);
 
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"count-messages",
 		`Count messages from the message monitoring
 This function can be usefull for making evaluations by counting messages with specific filters`,
