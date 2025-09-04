@@ -4,7 +4,7 @@ import { McpServerWithMiddleware } from "../../utils/middleware";
 import { z } from "zod";
 
 export const registerMappingsExampleHandler = (server: McpServerWithMiddleware) => {
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"list-mapping-examples",
 		`Get all available message mapping examples.
 This is useful to edit existing or develope new message mappings
@@ -28,7 +28,7 @@ src/main/resources/scenarioflows/mapping/<mapping id>.mmap contains the mapping 
 		}
 	);
 
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"get-mapping-example",
 		"Get an example provided by list-mapping-examples",
 		{

@@ -5,7 +5,7 @@ import { McpServerWithMiddleware } from "../../utils/middleware";
 import { formatError } from "../../utils/customErrHandler";
 
 export const registerPackageHandlers = (server: McpServerWithMiddleware) => {
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"packages",
 		"Get all integration packages",
 		{},
@@ -26,7 +26,7 @@ export const registerPackageHandlers = (server: McpServerWithMiddleware) => {
 		}
 	);
 
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"package",
 		"Get Content of a integration package by name",
 		{
@@ -49,7 +49,7 @@ export const registerPackageHandlers = (server: McpServerWithMiddleware) => {
 		}
 	);
 
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"create-package",
 		"Create a new integration package",
 		{

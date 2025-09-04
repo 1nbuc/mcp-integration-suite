@@ -15,7 +15,7 @@ import { formatError } from "../../utils/customErrHandler";
 import { createMappingTestIflow } from "../../api/messages/messageLogs";
 
 export const registerMappingsHandler = (server: McpServerWithMiddleware) => {
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"get-messagemapping",
 		`Get the data of an Message Mapping and the contained ressources. 
     Some ressources might relay on other package artefacts which are not included but reffrenced
@@ -54,7 +54,7 @@ export const registerMappingsHandler = (server: McpServerWithMiddleware) => {
 		}
 	);
 
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"update-message-mapping",
 		`Update or create files/content of an message mapping
     You only have to provide files that need to be updated but allways send the full file
@@ -118,7 +118,7 @@ export const registerMappingsHandler = (server: McpServerWithMiddleware) => {
 		}
 	);
 
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"deploy-message-mapping",
 		`
         deploy a message-mapping
@@ -147,7 +147,7 @@ export const registerMappingsHandler = (server: McpServerWithMiddleware) => {
 		}
 	);
 
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"create-empty-mapping",
 		`Create an empty message mapping without functionality. You probably want to add content to it afterwards with tool get-mapping and then update-mapping
 		Be aware that most of the time you don't need to create an extra mapping. Most scenarios have a mapping within the iflow. Consider looking at iflow examples`,
@@ -175,7 +175,7 @@ export const registerMappingsHandler = (server: McpServerWithMiddleware) => {
 		}
 	);
 
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"get-all-messagemappings",
 		"Get all available message mappings",
 		{},
@@ -200,7 +200,7 @@ export const registerMappingsHandler = (server: McpServerWithMiddleware) => {
 		}
 	);
 
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"create-mapping-testiflow",
 		`Creates an iflow called if_echo_mapping
 This iflow can be used to test mappings, it returns the content after mapping.

@@ -76,7 +76,7 @@ async function printDiagram(page: puppeteer.Page, options: DiagramOptions): Prom
       });
     } else if (output.endsWith('.png')) {
       await page.screenshot({
-        path: output,
+        path: `${output}.png`,
         clip: {
           x: 0,
           y: 0,

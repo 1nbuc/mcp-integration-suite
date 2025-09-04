@@ -37,7 +37,7 @@ export const updateFiles = z.array(
 );
 
 export const registerIflowHandlers = (server: McpServerWithMiddleware) => {
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"get-iflow",
 		`Get the data of an iflow and the contained ressources. 
 Some ressources might relay on other package artefacts which are not included but reffrenced
@@ -72,7 +72,7 @@ Some ressources might relay on other package artefacts which are not included bu
 		}
 	);
 
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"create-empty-iflow",
 		`Create an empty iflow without functionality. You probably want to add content to it afterwards with tool get-iflow and then update-iflow`,
 		{
@@ -99,7 +99,7 @@ Some ressources might relay on other package artefacts which are not included bu
 		}
 	);
 
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"update-iflow",
 		`Update or create files/content of an iflow
 You only have to provide files that need to be updated but allways send the full file
@@ -137,13 +137,13 @@ src/main/resources/scenarioflows/integrationflow/<iflow id>.iflw contains the if
 					logInfo("auto deploy is activated");
 					await saveAsNewVersion(id);
 					const taskId = await deployIflow(id);
-					if(taskId) {
+					if (taskId) {
 						const deployStatus = await waitAndGetDeployStatus(taskId);
 						result["deployStatus"] = deployStatus;
 					} else {
 						result["deployStatus"] = "unknown, please check manually. Deployment was scheduled"
 					}
-					
+
 				}
 
 				return {
@@ -166,7 +166,7 @@ src/main/resources/scenarioflows/integrationflow/<iflow id>.iflw contains the if
 		}
 	);
 	// Shit SAP API
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"get-iflow-endpoints",
 		`
 Get endpoint(s) of iflow and its URLs and Protocols
@@ -214,7 +214,7 @@ These are the prefixes based on protocol. So if you get /some/endpoint from get-
 		}
 	);
 
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"iflow-image",
 		"Get the iflow logic shown as a image/diagram",
 		{
@@ -236,7 +236,7 @@ These are the prefixes based on protocol. So if you get /some/endpoint from get-
 		}
 	);
 
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"get-deploy-error",
 		`
 If you tried to deploy an Artifact like Iflow or mapping and got an error use this too to get the error message and context
@@ -271,7 +271,7 @@ If you have errors consider checking the available examples to resolve them
 		}
 	);
 
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"deploy-iflow",
 		`
 deploy a iflow
@@ -300,7 +300,7 @@ If the deployment status is unsuccessful try getting information from get-deploy
 		}
 	);
 
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"get-iflow-configurations",
 		`Get all configurations of an IFlow
 Configuration is used to dynamically set values within an iflow. For example a username could be stored in a configuration instead of the iflow directly
@@ -332,7 +332,7 @@ Not every iflow is using configurations tho. most of the time configuration is m
 		}
 	);
 
-	server.registerTool(
+	server.registerToolIntegrationSuite(
 		"get-all-iflows",
 		`Get a list of all available iflows in a Package
 If the user asks for all iflows, get all packages first and then query for each package`,
