@@ -168,7 +168,9 @@ describe('Custom Error Handler Utilities', () => {
          it('should format a null error', () => {
             const result = extractAxiosError(null);
             expect(result.type).toEqual('text');
-            expect(result.text).toContain('Received a null error');
+            if (result.type === 'text') {
+                expect(result.text).toContain('Received a null error');
+            }
         });
 
         it('should format an unknown object error', () => {

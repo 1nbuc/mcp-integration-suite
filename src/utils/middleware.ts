@@ -1,4 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { CallToolResult, ServerRequest, ServerNotification, ContentBlock } from "@modelcontextprotocol/sdk/types.js";
+import { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol.js";
 import { z } from "zod";
 
 type MiddlewareFunction = (
@@ -7,35 +9,7 @@ type MiddlewareFunction = (
 	params: z.ZodRawShape
 ) => Promise<void>;
 
-export type contentReturnElement =
-	| {
-		[x: string]: unknown;
-		type: "text";
-		text: string;
-	}
-	| {
-		[x: string]: unknown;
-		type: "image";
-		data: string;
-		mimeType: string;
-	}
-	| {
-		[x: string]: unknown;
-		type: "resource";
-		resource:
-		| {
-			[x: string]: unknown;
-			text: string;
-			uri: string;
-			mimeType?: string;
-		}
-		| {
-			[x: string]: unknown;
-			uri: string;
-			blob: string;
-			mimeType?: string;
-		};
-	};
+export type contentReturnElement = ContentBlock;
 
 export class MiddlewareManager {
 	private middlewares: MiddlewareFunction[] = [];
@@ -65,8 +39,8 @@ export class MiddlewareManager {
 export class McpServerWithMiddleware extends McpServer {
 	private middlewareManager: MiddlewareManager;
 
-	constructor(options: ConstructorParameters<typeof McpServer>[0]) {
-		super(options);
+	constructor(serverInfo: ConstructorParameters<typeof McpServer>[0], options?: ConstructorParameters<typeof McpServer>[1]) {
+		super(serverInfo, options);
 		this.middlewareManager = new MiddlewareManager();
 	}
 
@@ -83,22 +57,17 @@ export class McpServerWithMiddleware extends McpServer {
 		params: z.ZodRawShape,
 		handler: (
 			args: { [x: string]: any },
-			extra: { [x: string]: unknown }
-		) => Promise<{
-			[x: string]: unknown;
-			content: Array<contentReturnElement>;
-			_meta?: { [x: string]: unknown };
-			isError?: boolean;
-		}>
+			extra: RequestHandlerExtra<ServerRequest, ServerNotification>
+		) => Promise<CallToolResult>
 	) {
 		const wrappedHandler = async (
 			args: { [x: string]: any },
-			extra: { [x: string]: unknown }
-		) => {
+			extra: RequestHandlerExtra<ServerRequest, ServerNotification>
+		): Promise<CallToolResult> => {
 			await this.middlewareManager.execute(name, params);
 			return handler(args, extra);
 		};
 
-		return this.tool(name, description, params, wrappedHandler);
+		return this.registerTool<any, any>(name, { description, inputSchema: params }, wrappedHandler);
 	}
 }
