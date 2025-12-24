@@ -23,6 +23,7 @@ config({ path: path.join(projPath, ".env") });
 const server = new McpServerWithMiddleware({
 	name: "integration-suite",
 	version: "1.0.0",
+}, {
 	capabilities: {
 		resources: {},
 		tools: {},
@@ -63,4 +64,3 @@ if (!process.env.JEST_WORKER_ID) {
 		.then(() => writeToLog("server started"));
 
 }
-
