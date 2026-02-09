@@ -2,7 +2,7 @@
 
 import * as puppeteer from 'puppeteer';
 import * as fs from 'fs';
-import path, { basename, resolve, relative } from 'path';
+import path, { basename } from 'path';
 import { readFileSync } from 'fs';
 import { projPath } from '../../..';
 
@@ -56,7 +56,7 @@ async function printDiagram(page: puppeteer.Page, options: DiagramOptions): Prom
     footer
   });
 
-  page.setViewport({
+  await page.setViewport({
     width: Math.round(desiredViewport.width),
     height: Math.round(desiredViewport.height),
     deviceScaleFactor: deviceScaleFactor || 1
@@ -76,7 +76,7 @@ async function printDiagram(page: puppeteer.Page, options: DiagramOptions): Prom
       });
     } else if (output.endsWith('.png')) {
       await page.screenshot({
-        path: `${output}.png`,
+        path: output,
         clip: {
           x: 0,
           y: 0,

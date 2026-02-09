@@ -1,15 +1,13 @@
 
 import { extractToFolder, folderToZipBuffer } from "../../utils/zip";
-import { getCurrentDestination, getOAuthToken } from "../api_destination";
+import { getCurrentDestination } from "../api_destination";
 import { updateFiles } from "../../handlers/iflow/tools";
 
 import { z } from "zod";
 import semver from "semver";
 import {
-	Configurations,
 	deployIntegrationDesigntimeArtifact,
 	integrationContent,
-	IntegrationDesigntimeArtifacts,
 	integrationDesigntimeArtifactSaveAsVersion,
 	ServiceEndpoints,
 } from "../../generated/IntegrationContent";
@@ -19,7 +17,6 @@ import { getEndpointUrl } from "../../utils/getEndpointUrl";
 const {
 	integrationDesigntimeArtifactsApi,
 	serviceEndpointsApi,
-	configurationsApi,
 	integrationPackagesApi,
 } = integrationContent();
 
@@ -171,7 +168,7 @@ export const getEndpoints = async (id?: string) => {
 	);
 	const endpointsWithUrl: (ServiceEndpoints & { URL?: string })[] = endpoints;
 
-	endpointsWithUrl.map((endpoint) => {
+	endpointsWithUrl.forEach((endpoint) => {
 		endpoint.URL = getEndpointUrl(endpoint);
 	});
 
@@ -231,7 +228,6 @@ export const getAllIflowsByPackage = async (
 		.getByKey(pkgId)
 		.appendPath("/IntegrationDesigntimeArtifacts")
 		.executeRaw(await getCurrentDestination());
-	integrationDesigntimeArtifactsApi.schema;
 	if (allIflowsRes.status !== 200 || !allIflowsRes?.data?.d?.results) {
 		throw new Error(
 			`Error getting iflows of ${pkgId} status: ${allIflowsRes.status}, response: ${allIflowsRes.data}`

@@ -39,8 +39,8 @@ export const updateFiles = z.array(
 export const registerIflowHandlers = (server: McpServerWithMiddleware) => {
 	server.registerToolIntegrationSuite(
 		"get-iflow",
-		`Get the data of an iflow and the contained ressources. 
-Some ressources might relay on other package artefacts which are not included but reffrenced
+		`Get the data of an iflow and the contained resources.
+Some resources might rely on other package artifacts which are not included but referenced
 `,
 		{
 			id: z.string().describe("ID of the IFLOW"),
@@ -102,10 +102,10 @@ Some ressources might relay on other package artefacts which are not included bu
 	server.registerToolIntegrationSuite(
 		"update-iflow",
 		`Update or create files/content of an iflow
-You only have to provide files that need to be updated but allways send the full file
+You only have to provide files that need to be updated but always send the full file
 
-If you encounter prolems updating/deploying iflows consider taking a look at the available templates where you can learn from
-Templates for complex iflows and message mappings are avialagle
+If you encounter problems updating/deploying iflows consider taking a look at the available templates where you can learn from
+Templates for complex iflows and message mappings are available
 
 Iflows can contain message mappings, datatypes (XSDs) and scripts
 Message mappings can also be standalone objects, but most of the time will be featured within an iflow
@@ -124,7 +124,7 @@ src/main/resources/scenarioflows/integrationflow/<iflow id>.iflw contains the if
 			autoDeploy: z
 				.boolean()
 				.describe(
-					"True if iflow should be deployed after updateing, false if not"
+					"True if iflow should be deployed after updating, false if not"
 				),
 		},
 		async ({ id, files, autoDeploy }) => {
@@ -165,17 +165,16 @@ src/main/resources/scenarioflows/integrationflow/<iflow id>.iflw contains the if
 			}
 		}
 	);
-	// Shit SAP API
 	server.registerToolIntegrationSuite(
 		"get-iflow-endpoints",
 		`
 Get endpoint(s) of iflow and its URLs and Protocols
-Isn't very reliable unfourtunately.
+Note: Isn't very reliable unfortunately.
 If you receive <host>/http/endpointlink the endpoint could also be <host>/http/endpoint/link
 
-The URI path will allways be prefixed with protocol
+The URI path will always be prefixed with protocol
 
-If you use the error and it gives you 404 try getting the iflow and parsing the actual endpint
+If you use the error and it gives you 404 try getting the iflow and parsing the actual endpoint
 But keep in mind that the path in the iflow is missing a prefix
 These are the prefixes based on protocol. So if you get /some/endpoint from get-iflow actual path is /http/some/endpoint for REST
     "REST": '/http/',
@@ -216,23 +215,30 @@ These are the prefixes based on protocol. So if you get /some/endpoint from get-
 
 	server.registerToolIntegrationSuite(
 		"iflow-image",
-		"Get the iflow logic shown as a image/diagram",
+		"Get the iflow logic shown as an image/diagram",
 		{
 			iflowId: z.string().describe("IFlow ID/Name"),
 		},
 		async ({ iflowId }) => {
-			const iflowPath = await getIflowFolder(iflowId);
-			logInfo(iflowPath);
-			const pngString = await getiFlowToImage(iflowPath);
-			return {
-				content: [
-					{
-						type: "image",
-						data: pngString,
-						mimeType: "image/png",
-					},
-				],
-			};
+			try {
+				const iflowPath = await getIflowFolder(iflowId);
+				logInfo(iflowPath);
+				const pngString = await getiFlowToImage(iflowPath);
+				return {
+					content: [
+						{
+							type: "image",
+							data: pngString,
+							mimeType: "image/png",
+						},
+					],
+				};
+			} catch (error) {
+				return {
+					isError: true,
+					content: [formatError(error)],
+				};
+			}
 		}
 	);
 

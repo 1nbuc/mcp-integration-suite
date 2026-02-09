@@ -7,7 +7,7 @@ import {
 import { updateFiles } from "../../handlers/iflow/tools";
 import { parseFolder, patchFile } from "../../utils/fileBasedUtils";
 import { extractToFolder, folderToZipBuffer } from "../../utils/zip";
-import { getCurrentDestination, getOAuthToken } from "../api_destination";
+import { getCurrentDestination } from "../api_destination";
 import { z } from "zod";
 import semver from "semver";
 import { executeHttpRequest } from "@sap-cloud-sdk/http-client";
@@ -75,7 +75,7 @@ export const updateMessageMapping = async (
 	return {
 		messageMappingUpdate: {
 			status: res.status,
-			text: "Succesfully updated mapping",
+			text: "Successfully updated mapping",
 		},
 	};
 };
@@ -117,10 +117,10 @@ export const deployMapping = async (id: string): Promise<string> => {
 		throw new Error("Error starting deployment of " + id);
 	}
 
-	// Actually SAP API is broken, it returns an empty body instead of the taskId, so waiting for deployment isn't possible
-	if (deployRes.data) {
-		throw new Error(`The deployment was triggered successfully altough didn't return a token to wait for the deployment to finish
-		But you can still use get-deploy-error to check the status`);
+	// SAP API is known to return an empty body instead of the taskId for mappings
+	if (!deployRes.data) {
+		logInfo(`Deployment of ${id} triggered but SAP API returned no taskId. Use get-deploy-error to check status.`);
+		return "";
 	}
 	logInfo(`got TaskId ${deployRes.data} for deployment of ${id}`);
 	return deployRes.data;

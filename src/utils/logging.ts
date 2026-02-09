@@ -6,28 +6,29 @@ import { projPath } from "..";
 const log_file = fs.createWriteStream(path.resolve(projPath, "serverlog.txt"), {
 	flags: "a",
 	encoding: "utf-8",
-	mode: 0o666,
+	mode: 0o640,
 });
 
 const err_log_file = fs.createWriteStream(path.resolve(projPath, "errorlog.txt"), {
 	flags: "a",
 	encoding: "utf-8",
-	mode: 0o666,
+	mode: 0o640,
 });
+
+const timestamp = () => new Date().toISOString();
 
 /**
  * Writes a log entry to the log file
  * @param d - The object or message to be logged
  */
 export const writeToLog = (d: any) => {
-	log_file.write(util.format(d) + "\n");
+	log_file.write(`[${timestamp()}] ${util.format(d)}\n`);
 };
-
 
 /**
  * Writes a log entry to the error log file
  * @param d - The object or message to be logged
  */
 export const writeToErrLog = (d: any) => {
-	err_log_file.write(util.format(d) + "\n");
+	err_log_file.write(`[${timestamp()}] ${util.format(d)}\n`);
 };

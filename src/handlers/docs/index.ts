@@ -4,11 +4,13 @@ import { logError, projPath } from "../..";
 import fsAsync from 'fs/promises';
 import fs from 'fs';
 import path from "path";
-import { glob, globSync } from "glob";
+import { globSync } from "glob";
 import { formatError } from "../../utils/customErrHandler";
+import { assertPathWithinBase } from "../../utils/fileBasedUtils";
+
+const baseDocPath = path.join(projPath, "resources", "Docs", "ISuite");
 
 const getDocsMap = () => {
-    const baseDocPath = path.join(projPath, "resources", "Docs", "ISuite");
     const allFiles = globSync(path.join(baseDocPath, "**", "*.md").replace(/\\/g, '/'), { nodir: true });
 
     const resultObj: { [key: string]: string } = {};
@@ -25,68 +27,62 @@ const docsMap: { [key: string]: string } = getDocsMap();
 
 export const registerDocsHandlers = (server: McpServerWithMiddleware) => {
     server.registerToolIntegrationSuite("get-docs",
-        "Get indexed documentation parts. From the index of the SAP integration Suite documentation jump to any part of the documentation you want",
+        "Get indexed documentation parts. From the index of the SAP Integration Suite documentation jump to any part of the documentation you want",
         {
             docPath: z.string().describe(`
 Internal documentation path e.g. 40-RemoteSystems/basic-authentication-of-an-idp-user-for-api-clients-57f104d.md
 If not provided it returns the index`).optional()
         }, async ({ docPath }) => {
-            docPath = docPath ? docPath : "index.md";
-            const fullDocPath = path.join(projPath, "resources", "Docs", "ISuite", docPath);
+            try {
+                docPath = docPath ? docPath : "index.md";
+                const fullDocPath = assertPathWithinBase(baseDocPath, docPath);
 
-            const docStr = (await fsAsync.readFile(fullDocPath)).toString()
-            const formattedString = JSON.stringify({
-                docPath,
-                text: docStr
-            })
+                const docStr = (await fsAsync.readFile(fullDocPath)).toString()
+                const formattedString = JSON.stringify({
+                    docPath,
+                    text: docStr
+                })
 
-            return {
-                content: [{
-                    type: "text",
-                    text: formattedString
-                }]
+                return {
+                    content: [{
+                        type: "text",
+                        text: formattedString
+                    }]
+                }
+            } catch (error) {
+                logError(error);
+                return {
+                    isError: true,
+                    content: [formatError(error)],
+                };
             }
         })
 
-    server.registerToolIntegrationSuite("search-docs", "Search for docs based on keywords", {
+    server.registerToolIntegrationSuite("search-docs", "Search for docs based on keywords (case-sensitive)", {
         keywords: z.array(z.string()).describe("Search keywords"),
         matchAll: z.boolean().describe("If true it must match all keywords, if false only one of the provided keywords")
     }, async ({ keywords, matchAll }) => {
         try {
-
-
             const matches: { [key: string]: string } = {};
 
-            Object.entries(docsMap).forEach(docPage => {
-                const [key, value] = docPage;
-
-                let hasUnmatchedKeyword = false;
-
-                for (const keyword of keywords) {
-                    if (matchAll && hasUnmatchedKeyword) {
-                        continue;
-                    }
-
-                    if (value.includes(keyword)) {
+            Object.entries(docsMap).forEach(([key, value]) => {
+                if (matchAll) {
+                    const allMatch = keywords.every((keyword: string) => value.includes(keyword));
+                    if (allMatch) {
                         matches[key] = value;
-                        continue;
                     }
-
-                    if (matchAll && matches[key]) {
-                        delete matches[key];
+                } else {
+                    const anyMatch = keywords.some((keyword: string) => value.includes(keyword));
+                    if (anyMatch) {
+                        matches[key] = value;
                     }
-
-                    hasUnmatchedKeyword = true;
                 }
-
-                hasUnmatchedKeyword = false;
             });
 
             const result = JSON.stringify(matches);
 
             if (result.length > 1000000) {
-                throw new Error(`Your search returned documents with a total length of ${result.length}.
-                    Please use diffrent search parameters. Total length must be < 1000000`)
+                throw new Error(`Your search returned documents with a total length of ${result.length}. Please use different search parameters. Total length must be < 1000000`)
             }
 
             return {

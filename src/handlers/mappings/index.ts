@@ -17,8 +17,8 @@ import { createMappingTestIflow } from "../../api/messages/messageLogs";
 export const registerMappingsHandler = (server: McpServerWithMiddleware) => {
 	server.registerToolIntegrationSuite(
 		"get-messagemapping",
-		`Get the data of an Message Mapping and the contained ressources. 
-    Some ressources might relay on other package artefacts which are not included but reffrenced
+		`Get the data of a Message Mapping and the contained resources.
+    Some resources might rely on other package artifacts which are not included but referenced
     `,
 		{
 			id: z.string().describe("ID of the Message Mapping"),
@@ -42,13 +42,8 @@ export const registerMappingsHandler = (server: McpServerWithMiddleware) => {
 			} catch (error) {
 				logError(error);
 				return {
-					content: [
-						{
-							type: "text",
-							text: JSON.stringify({ type: "error", error }),
-						},
-					],
 					isError: true,
+					content: [formatError(error)],
 				};
 			}
 		}
@@ -57,7 +52,7 @@ export const registerMappingsHandler = (server: McpServerWithMiddleware) => {
 	server.registerToolIntegrationSuite(
 		"update-message-mapping",
 		`Update or create files/content of an message mapping
-    You only have to provide files that need to be updated but allways send the full file
+    You only have to provide files that need to be updated but always send the full file
     Make sure you ONLY change the things the user instructs you to and keep all other things
 
 	If you encounter problems updating/deploying mappings consider looking at the available examples
@@ -75,7 +70,7 @@ export const registerMappingsHandler = (server: McpServerWithMiddleware) => {
 			autoDeploy: z
 				.boolean()
 				.describe(
-					"True if messageMapping should be deployed after updateing, false if not"
+					"True if messageMapping should be deployed after updating, false if not"
 				),
 		},
 		async ({ id, files, autoDeploy }) => {
@@ -204,7 +199,7 @@ export const registerMappingsHandler = (server: McpServerWithMiddleware) => {
 		"create-mapping-testiflow",
 		`Creates an iflow called if_echo_mapping
 This iflow can be used to test mappings, it returns the content after mapping.
-Allways run this tool before using the test iflow because it resets old content of the iflow.
+Always run this tool before using the test iflow because it resets old content of the iflow.
 To test a mapping use the usual update procedure but replace the current mapping and datatypes with yours
 The endpoint can also be found using the regular endpoint finding procedure`,
 		{

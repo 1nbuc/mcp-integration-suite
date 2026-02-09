@@ -27,7 +27,7 @@ export const sendRequestToCPI = async (
 
     const fullURL = `${process.env["CPI_BASE_URL"]}${path}`;
     logInfo(`Executing request against ${fullURL}`);
-    const iflowResponse = await fetch(`${process.env["CPI_BASE_URL"]}${path}`, {
+    const iflowResponse = await fetch(fullURL, {
         headers: reqHeaders,
         body,
         method,

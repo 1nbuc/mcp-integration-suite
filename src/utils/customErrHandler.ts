@@ -73,10 +73,12 @@ export const extractAxiosError = (error: any): contentReturnElement => {
 				};
 			}
 		}
-	} catch (error) {}
+	} catch (_extractionError) {
+		// Axios extraction failed, fall through to generic handler
+	}
 
 	return {
 		type: "text",
-		text: JSON.stringify({ error: error.toString() }),
+		text: JSON.stringify({ error: error instanceof Error ? error.message : String(error) }),
 	};
 };
